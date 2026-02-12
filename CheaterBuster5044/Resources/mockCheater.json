@@ -1,0 +1,18 @@
+{
+  "id": "328a1d54-737c-4f6d-a52e-080f08008836",
+  "status": "finished",
+  "result": {
+    "risk_score": 30,
+    "red_flags": [
+      "Urgent call to action: 'MET Checker and NFT registration is now LIVE'",
+      "Use of external links: 'Tweet Link', 'Link to site' with no verification"
+    ],
+    "recommendations": [
+      "Verify links through official sources before clicking",
+      "Avoid sharing personal or financial info on unknown platforms",
+      "Research Meteora and related products independently",
+      "Be cautious of hype around NFT presales and allocations"
+    ]
+  },
+  "error": null
+}
