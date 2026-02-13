@@ -23,13 +23,6 @@ struct CheckView: View {
         }
     }
     
-    private var consentAlertTitle: String {
-        switch checkType {
-        case .profileAuthent: "Check Photo"
-        case .messageAnalysis, .locationInsights: "AI-Powered Image Analysis"
-        }
-    }
-
     init(checkType: CheckType) {
         self.checkType = checkType
         _checkVM = StateObject(wrappedValue: CheckVM())
@@ -115,14 +108,26 @@ struct CheckView: View {
         .fullScreenCover(isPresented: $showPaywall, content: {
             PaywallView()
         })
-        .alert(consentAlertTitle, isPresented: $showConsentAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Continue") {
-                saveConsentAndAnalyze()
+        .overlay {
+            if showConsentAlert {
+                CheckAlert(
+                    checkType: checkType,
+                    onCancel: {
+                        withAnimation(.spring(response: 0.28, dampingFraction: 0.9)) {
+                            showConsentAlert = false
+                        }
+                    },
+                    onContinue: {
+                        withAnimation(.spring(response: 0.28, dampingFraction: 0.9)) {
+                            showConsentAlert = false
+                        }
+                        saveConsentAndAnalyze()
+                    }
+                )
+                .zIndex(1)
             }
-        } message: {
-            Text("To process your request, the app will send the selected image to an artificial intelligence service. Data is transmitted only after your consent, is not stored on servers, and is used exclusively to generate the result.")
         }
+        .animation(.spring(response: 0.28, dampingFraction: 0.9), value: showConsentAlert)
         .toolbar(.hidden)
     }
     
@@ -230,7 +235,9 @@ struct CheckView: View {
                     if isConsentGiven {
                         checkVM.startAnalyze(checkType: checkType, modelContext: modelContext)
                     } else {
-                        showConsentAlert = true
+                        withAnimation(.spring(response: 0.28, dampingFraction: 0.9)) {
+                            showConsentAlert = true
+                        }
                     }
                 })
             }

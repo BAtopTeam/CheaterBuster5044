@@ -78,6 +78,30 @@ enum CheckType: String, Identifiable, CaseIterable {
             case .locationInsights: "Location match found"
         }
     }
+    
+    var alertTitle: String {
+        switch self {
+            case .profileAuthent:   "Check Photo"
+            case .messageAnalysis:  "Analyze Message for Scams"
+            case .locationInsights: "Verify Photo Location"
+        }
+    }
+    
+    var alertText: String {
+        switch self {
+            case .profileAuthent:   "To verify if this photo is used in your own dating profiles, we’ll send it to our secure server"
+            case .messageAnalysis:  "To check if your conversation contains red flags (e.g., scams, phishing), we’ll: "
+            case .locationInsights: "To check if the location in your photo matches your dating profile:"
+        }
+    }
+    
+    var alertTextsCard: ImageResource {
+        switch self {
+            case .profileAuthent:   .profileAuthentAlert
+            case .messageAnalysis:  .messageAnalysisAlert
+            case .locationInsights: .locationInsightsAlert
+        }
+    }
 }
 
 struct CheckCard: View {
