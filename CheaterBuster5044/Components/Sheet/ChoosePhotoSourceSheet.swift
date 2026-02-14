@@ -8,6 +8,8 @@ struct ChoosePhotoSourceSheet: View {
     
     @State private var showGalleryPick: Bool = false
     @State private var showFilesPick: Bool = false
+    @State private var showGalleryConsentSheet: Bool = false
+    @State private var isGalleryConsentConfirmed: Bool = false
     @State private var galleryImages: [UIImage] = []
     @State private var showGalleryPermissionAlert: Bool = false
     
@@ -62,6 +64,11 @@ struct ChoosePhotoSourceSheet: View {
             )
             .ignoresSafeArea()
         }
+        .sheet(isPresented: $showGalleryConsentSheet, onDismiss: {
+            isGalleryConsentConfirmed = false
+        }) {
+            galleryConsentSheet
+        }
         .alert("Gallery Access Needed", isPresented: $showGalleryPermissionAlert) {
             Button("Open Settings") {
                 openAppSettings()
@@ -76,7 +83,7 @@ struct ChoosePhotoSourceSheet: View {
         VStack(spacing: 8) {
             SettingsButton(icn: .Icns.gallery,
                            title: "Gallery", showChevron: false, onAction: {
-                requestGalleryAccess()
+                showGalleryConsentSheet = true
             })
             
             SettingsButton(icn: .Icns.files,
@@ -84,6 +91,67 @@ struct ChoosePhotoSourceSheet: View {
                 showFilesPick = true
             })
         }
+    }
+    
+    var galleryConsentSheet: some View {
+        VStack(spacing: 20) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.Colors.black2.opacity(0.2))
+                .frame(width: 24, height: 4)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 8)
+            
+            Button(action: {
+                isGalleryConsentConfirmed.toggle()
+            }) {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: isGalleryConsentConfirmed ? "checkmark.square.fill" : "square")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(Color.Colors.black2)
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("I confirm that:")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Color.Colors.black2)
+                        
+                        Text("• This is my own photo, OR")
+                            .font(.system(size: 15, weight: .regular))
+                            .foregroundStyle(Color.Colors.black2)
+                        
+                        Text("• I have explicit permission from the person in the photo")
+                            .font(.system(size: 15, weight: .regular))
+                            .foregroundStyle(Color.Colors.black2)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .contentShape(Rectangle())
+                .multilineTextAlignment(.leading)
+            }
+            .contentShape(Rectangle())
+            .frame(maxHeight: .infinity, alignment: .top)
+            
+            HStack(spacing: 8) {
+                PrimeButton(
+                    title: "Cancel",
+                    action: { showGalleryConsentSheet = false }
+                )
+                
+                PrimeButton(
+                    title: "Select Photo",
+                    action: {
+                        showGalleryConsentSheet = false
+                        requestGalleryAccess()
+                    },
+                    isActive: isGalleryConsentConfirmed
+                )
+            }
+        }
+        .padding(.horizontal, 16)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .background(Color.Colors.primaryBG)
+        .presentationDetents([.height(210)])
+        .presentationCornerRadius(24)
+        .presentationDragIndicator(.hidden)
     }
 
     private func requestGalleryAccess() {

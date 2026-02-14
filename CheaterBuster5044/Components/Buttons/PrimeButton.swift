@@ -17,6 +17,7 @@ struct PrimeButton: View {
                         .fill(LinearGradient(colors: [Color.Colors.accentTop, Color.Colors.accentBottom],
                                              startPoint: .top, endPoint: .bottom))
                 )
+                .animation(.interpolatingSpring(duration: 0.2), value: isActive)
                 .contentShape(RoundedRectangle(cornerRadius: 16))
         }
         .disabled(!isActive)
